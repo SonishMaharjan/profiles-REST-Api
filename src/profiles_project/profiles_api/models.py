@@ -32,7 +32,7 @@ class UserProfileManager(BaseUserManager):
 
         return user;
 
-    def create_superuser(self):
+    def create_superuser(self,email,name,password):
         """"create superuser with given details"""
 
         user = self.create_user(email,name,password)
@@ -53,7 +53,6 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
     is_staff = models.BooleanField(default =False)
 
     #object manager used to mange UserProfile like creating administrator user normal user authenticate
-
     objects = UserProfileManager()
 
     #django variable
