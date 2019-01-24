@@ -10,7 +10,7 @@ class HelloSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     """serializer for our user profile object"""
 
-    #Meta class defines Django to take what field from model
+    #Meta class defines Django serializers to take what field from model
     class Meta:
         model = models.UserProfile
         fields = ('id','email','name','password')
@@ -28,3 +28,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """Profile Serializer for news feed item"""
+    class Meta:
+         model = models.ProfileFeedItem
+         #user_profile takes id as it is foriegn Key
+         #field must be list or tuple not dictionay
+         fields= ('id','user_profile','status_text','created_on',)
+
+         extra_kwargs= {"user_profile":{"read_only":True,},}

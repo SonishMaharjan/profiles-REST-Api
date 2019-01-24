@@ -14,6 +14,10 @@ from rest_framework import filters
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 
+#if not authenticated read only can be done
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+#must be authenitcated to read too
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 from . import permissions
@@ -107,16 +111,29 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.UpdateOwnProfile,)
 
-    #addin search for backends
+    #adding search for backends
     filter_backends = (filters.SearchFilter,)
     search_fields =("name","email",)
 
 class LoginViewSet(viewsets.ViewSet):
     """Checks email and passwork and return an auth token"""
-
     serializer_class = AuthTokenSerializer
 
     def create(self, request):
         """Use the ObtainAuthToken APIView to validate and create a token"""
-
         return ObtainAuthToken().post(request)
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handle creating,reading and updating profile feed item"""
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+
+    queryset= models.ProfileFeedItem.objects.all()
+    #IsAuthenticatedOrReadOnly is changed into IsAuthenticated
+    #now user have authenticated before reading data too
+    permission_classes = (permissions.PostOwnStatus,IsAuthenticated)
+    #when django object create new view set it will Run
+    #genrally used to customize-- here user who created feed is equals to current user
+    def perform_create(self,serializer):
+        """sets user profile to login user"""
+        serializer.save(user_profile= self.request.user)
