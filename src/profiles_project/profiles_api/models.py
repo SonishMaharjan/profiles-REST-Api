@@ -73,3 +73,13 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         """Djngo uses this to convert this object to string"""
         return email
+
+class ProfileFeedItem(models.Model):
+    """Profile status update"""
+    user_profile = models.ForeignKey("UserProfile",on_delete=models.CASCADE)
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now= True)
+
+    def __str__(self):
+        """Return models as string"""
+        return self.status_text
